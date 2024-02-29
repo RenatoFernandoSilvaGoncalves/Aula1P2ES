@@ -5,17 +5,38 @@ import Row from 'react-bootstrap/Row';
 import { useState } from 'react';
 
 export default function FormCadClientes(props) {
+    //Conceito de estado de um componente React
+    //O estado de um componente React é preservado independete de quantas vezes o componente foi renderizado (reiniciado)
     const [validado, setValidado] = useState(false);
+    const [cliente, setCliente] = useState({
+        nome: "",
+        sobrenome: "",
+        cidade: "",
+        estado: "",
+        cep: ""
+    });
+
+    function manipularMudanca(evento) {
+        //extrair do evento onChange quem provocou a sua ocorrência
+        const componente = evento.currentTarget;
+        setCliente({ ...cliente, [componente.name]: componente.value });
+    }
 
     function manipularSubmissao(evento) {
         evento.preventDefault();
         evento.stopPropagation();
         const form = evento.currentTarget;
         if (form.checkValidity() === false) {
-            setValidado(false);
+            setValidado(true);
         }
         else{
-            setValidado(true);
+            setValidado(false);
+            //todo
+            //adicionar cliente em uma lista se os dados estiverem corretos
+            props.setListaClientes([...props.listaClientes, cliente]);
+            //depois de adicionar um novo cliente voltar a exibir a tabela
+            props.setExibirTabela(true);
+            
         }
     }
     return (
@@ -27,6 +48,10 @@ export default function FormCadClientes(props) {
                         required
                         type="text"
                         placeholder="Primeiro nome"
+                        value={cliente.nome}
+                        id="nome"
+                        name="nome"
+                        onChange={manipularMudanca}
                     />
                     <Form.Control.Feedback type='invalid'>Por favor, informe o primeiro nome.</Form.Control.Feedback>
                 </Form.Group>
@@ -36,7 +61,10 @@ export default function FormCadClientes(props) {
                         required
                         type="text"
                         placeholder="Last name"
-                        defaultValue="Otto"
+                        id="sobrenome"
+                        name="sobrenome"
+                        value={cliente.sobrenome}
+                        onChange={manipularMudanca}
                     />
                     <Form.Control.Feedback type='invalid'>Por favor, informe o sobrenome.</Form.Control.Feedback>
                 </Form.Group>
@@ -44,27 +72,52 @@ export default function FormCadClientes(props) {
             <Row className="mb-3">
                 <Form.Group as={Col} md="6" controlId="validationCustom03">
                     <Form.Label>Cidade</Form.Label>
-                    <Form.Control type="text" placeholder="Cidade" required />
+                    <Form.Control 
+                        type="text" 
+                        placeholder="Cidade" 
+                        required 
+                        value={cliente.cidade}
+                        id="cidade"
+                        name="cidade"
+                        onChange={manipularMudanca}/>
                     <Form.Control.Feedback type="invalid">
                         Por favor, informe a cidade.
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="3" controlId="validationCustom04">
                     <Form.Label>UF</Form.Label>
-                    <Form.Control type="text" placeholder="UF" required />
+                    <Form.Control 
+                        type="text" 
+                        placeholder="UF" 
+                        value={cliente.estado}
+                        required
+                        id="estado"
+                        name="estado"
+                        onChange={manipularMudanca}
+                        />
                     <Form.Control.Feedback type="invalid">
                         Por favor, informe o estado.
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="3" controlId="validationCustom05">
                     <Form.Label>CEP</Form.Label>
-                    <Form.Control type="text" placeholder="CEP" required />
+                    <Form.Control 
+                        type="text" 
+                        placeholder="CEP" 
+                        value={cliente.cep}
+                        id="cep"
+                        name="cep"
+                        onChange={manipularMudanca}
+                        required />
                     <Form.Control.Feedback type="invalid">
                         Por favor, informe o CEP.
                     </Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Button type="submit">Gravar</Button>
+            <Button onClick={() => {
+                props.setExibirTabela(true);
+            }}>Voltar</Button>
         </Form>
     );
 }
